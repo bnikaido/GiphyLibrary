@@ -5,10 +5,12 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
-import { NavMenuComponent } from './nav-menu/nav-menu.component';
-import { HomeComponent } from './home/home.component';
-import { CounterComponent } from './counter/counter.component';
-import { FetchDataComponent } from './fetch-data/fetch-data.component';
+import { NavMenuComponent } from './components/nav-menu/nav-menu.component';
+import { GiphyTableComponent } from './components/giphy-table/giphy-table.component';
+import { SearchBarComponent } from './components/search-bar/search-bar.component';
+import { HomeComponent } from './pages/home/home.component';
+import { CounterComponent } from './pages/counter/counter.component';
+import { FetchDataComponent } from './pages/fetch-data/fetch-data.component';
 import { ApiAuthorizationModule } from 'src/api-authorization/api-authorization.module';
 import { AuthorizeGuard } from 'src/api-authorization/authorize.guard';
 import { AuthorizeInterceptor } from 'src/api-authorization/authorize.interceptor';
@@ -17,6 +19,8 @@ import { AuthorizeInterceptor } from 'src/api-authorization/authorize.intercepto
   declarations: [
     AppComponent,
     NavMenuComponent,
+    GiphyTableComponent,
+    SearchBarComponent,
     HomeComponent,
     CounterComponent,
     FetchDataComponent
