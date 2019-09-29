@@ -11,6 +11,8 @@ using GiphyLibrary.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using GiphyLibrary.Domain;
+using Microsoft.Extensions.Options;
 
 namespace GiphyLibrary
 {
@@ -43,6 +45,10 @@ namespace GiphyLibrary
             {
                 configuration.RootPath = "ClientApp/dist";
             });
+            services.AddOptions()
+                .Configure<GiphyClientConfiguration>(Configuration.GetSection("GiphyClientConfiguration"))
+                .AddTransient(s => s.GetRequiredService<IOptions<GiphyClientConfiguration>>().Value)
+                .AddSingleton<IGiphyClient, GiphyClient>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
