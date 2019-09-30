@@ -27,6 +27,10 @@ namespace GiphyLibrary
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddOptions()
+                .Configure<GiphyClientConfiguration>(Configuration.GetSection("GiphyClientConfiguration"))
+                .AddTransient(s => s.GetRequiredService<IOptions<GiphyClientConfiguration>>().Value)
+                .AddSingleton<IGiphyClient, GiphyClient>();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
@@ -45,10 +49,6 @@ namespace GiphyLibrary
             {
                 configuration.RootPath = "ClientApp/dist";
             });
-            services.AddOptions()
-                .Configure<GiphyClientConfiguration>(Configuration.GetSection("GiphyClientConfiguration"))
-                .AddTransient(s => s.GetRequiredService<IOptions<GiphyClientConfiguration>>().Value)
-                .AddSingleton<IGiphyClient, GiphyClient>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

@@ -8,7 +8,7 @@ namespace GiphyLibrary.Domain
 {
     public interface IGiphyClient
     {
-        Task<GiphySearchResult> SearchGiphy(string searchString, int offset);
+        Task<GiphySearchResult> SearchGiphies(string searchString, int offset);
     }
 
     public class GiphyClient : IGiphyClient
@@ -30,7 +30,7 @@ namespace GiphyLibrary.Domain
             }
         }
 
-        public async Task<GiphySearchResult> SearchGiphy(string searchString, int offset)
+        public async Task<GiphySearchResult> SearchGiphies(string searchString, int offset)
         {
             var searchParameters = new SearchParameter
             {
@@ -48,7 +48,7 @@ namespace GiphyLibrary.Domain
             return await _giphy.Value.GetGifById(id);
         }
 
-        public async Task<GiphyIdsResult> GetManyGiphy(string[] ids)
+        public async Task<GiphyIdsResult> GetGiphies(string[] ids)
         {
             return await _giphy.Value.GetGifsByIds(ids);
         }

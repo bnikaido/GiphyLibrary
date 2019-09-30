@@ -1,1 +1,6 @@
-<p>giphy-table works!</p>
+<div class="giphy-table">
+  <div class="giphy" *ngFor="let giphy of giphies" >
+    <img src="{{giphy.downsizedUrl}}" alt="{{giphy.caption}}">
+  </div>
+</div>
+
