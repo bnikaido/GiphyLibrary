@@ -15,4 +15,12 @@ export class GiphyTableComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     console.log(this.giphies);
   }
+
+  saveGiphy() {
+    console.log("save works!");
+  }
+
+  tagGiphy() {
+    console.log("tag works!");
+  }
 }
