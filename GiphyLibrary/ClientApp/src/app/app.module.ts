@@ -1,7 +1,7 @@
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatPaginatorModule, MatTableModule } from '@angular/material';
+import { MatPaginatorModule, MatTableModule, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA, MatOptionModule, MatSelectModule } from '@angular/material';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
@@ -16,6 +16,7 @@ import { SearchBarComponent } from './components/search-bar/search-bar.component
 import { CounterComponent } from './pages/counter/counter.component';
 import { FetchDataComponent } from './pages/fetch-data/fetch-data.component';
 import { HomeComponent } from './pages/home/home.component';
+import { TagGiphyDialogComponent } from './components/tag-giphy-dialog/tag-giphy-dialog.component';
 
 
 @NgModule({
@@ -26,7 +27,8 @@ import { HomeComponent } from './pages/home/home.component';
     SearchBarComponent,
     HomeComponent,
     CounterComponent,
-    FetchDataComponent
+    FetchDataComponent,
+    TagGiphyDialogComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -40,11 +42,17 @@ import { HomeComponent } from './pages/home/home.component';
     ]),
     BrowserAnimationsModule,
     MatPaginatorModule,
-    MatTableModule
+    MatTableModule,
+    MatDialogModule,
+    MatOptionModule,
+    MatSelectModule
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: AuthorizeInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: AuthorizeInterceptor, multi: true },
+    { provide: MatDialogRef, useValue: {} },
+    { provide: MAT_DIALOG_DATA, useValue: [] }
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [TagGiphyDialogComponent]
 })
 export class AppModule { }
