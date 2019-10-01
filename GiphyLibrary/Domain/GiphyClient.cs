@@ -9,6 +9,7 @@ namespace GiphyLibrary.Domain
     public interface IGiphyClient
     {
         Task<GiphySearchResult> SearchGiphies(string searchString, int offset);
+        Task<GiphyIdResult> GetGiphy(string id);
     }
 
     public class GiphyClient : IGiphyClient

@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using GiphyLibrary.Domain;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace GiphyLibrary
 {
@@ -27,22 +28,34 @@ namespace GiphyLibrary
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddOptions()
+            // Setup configuration and dependency injection
+            services
+                .AddOptions()
                 .Configure<GiphyClientConfiguration>(Configuration.GetSection("GiphyClientConfiguration"))
                 .AddTransient(s => s.GetRequiredService<IOptions<GiphyClientConfiguration>>().Value)
                 .AddSingleton<IGiphyClient, GiphyClient>();
+
+            // Setup database
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-
             services.AddDefaultIdentity<ApplicationUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.AddIdentityServer()
+            services.AddDbContext<AccountDbContext>(options =>
+                options.UseSqlServer(
+                    Configuration.GetConnectionString("AccountConnection")));
+
+            // Setup authentication
+            services
+                .AddAuthentication()
+                .AddIdentityServerJwt();
+
+            services
+                .AddIdentityServer()
                 .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
 
-            services.AddAuthentication()
-                .AddIdentityServerJwt();
+            // Setup user interface
             services.AddControllersWithViews();
             services.AddRazorPages();
             services.AddSpaStaticFiles(configuration =>

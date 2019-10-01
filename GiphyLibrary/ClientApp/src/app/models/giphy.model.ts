@@ -3,4 +3,5 @@ export interface Giphy {
   caption: string;
   downsizedUrl: string;
   originalUrl: string;
+  tags: string[];
 }
