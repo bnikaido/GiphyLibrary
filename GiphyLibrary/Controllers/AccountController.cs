@@ -12,6 +12,7 @@ namespace GiphyLibrary.Controllers
 {
     [Authorize]
     [ApiController]
+    [Produces("application/json")]
     [Route("[controller]")]
     public class AccountController : ControllerBase
     {
@@ -26,12 +27,34 @@ namespace GiphyLibrary.Controllers
             this.context = context ?? throw new System.ArgumentNullException(nameof(context));
         }
 
+        [HttpGet("SavedGiphies/{id}")]
+        public ActionResult<Giphy> GetSavedGiphy(string id)
+        {
+            var result = context.Giphies
+                .Where(g => g.User == HttpContext.User.Identity.Name && g.GiphyId == id)
+                .FirstOrDefault();
+
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            return new ObjectResult(new Giphy
+            {
+                Id = result.Id,
+                Caption = result.Tags.FirstOrDefault(),
+                OriginalUrl = result.OriginalUrl,
+                DownsizedUrl = result.DownsizedUrl,
+                Tags = result.Tags.ToArray()
+            });
+        }
+
         [HttpGet("SavedGiphies")]
-        public IEnumerable<Giphy> GetSavedGiphies(IEnumerable<string> tags = null)
+        public ActionResult<IEnumerable<Giphy>> GetSavedGiphies(IEnumerable<string> tags = null)
         {
             tags = tags ?? Enumerable.Empty<string>();
 
-            return context.Giphies
+            var result = context.Giphies
                 .Where(g => g.User == HttpContext.User.Identity.Name && g.Tags.Exists(t => tags.Contains(t)))
                 .Select(g => new Giphy
                 {
@@ -40,23 +63,31 @@ namespace GiphyLibrary.Controllers
                     OriginalUrl = g.OriginalUrl,
                     DownsizedUrl = g.DownsizedUrl,
                     Tags = g.Tags.ToArray()
-                });
+                }).ToList();
+
+            if(result == null)
+            {
+                return NotFound();
+            }
+
+            return new ObjectResult(result);
         }
 
         [HttpPost("SavedGiphies/{id}")]
-        public async Task PostGiphy(string id, [FromBody] string tag = "")
+        public async Task<IActionResult> PostGiphy(string id, string tag = null)
         {
             var username = HttpContext.User.Identity.Name;
             var giphy = context.Giphies
                 .Where(g => g.User == username && g.GiphyId == id)
                 .FirstOrDefault();
             
-            if(giphy != null)
+            if(giphy != null && tag != null)
             {
                 giphy.Tags.Append(tag);
                 context.Giphies.Update(giphy);
+                return NoContent();
             }
-            else
+            else if (giphy == null)
             {
                 var newGiphy = await client.GetGiphy(id);
                 await context.Giphies.AddAsync(new StoredGiphy
@@ -65,9 +96,14 @@ namespace GiphyLibrary.Controllers
                     User = username,
                     OriginalUrl = newGiphy.Data.Images.Original.Url,
                     DownsizedUrl = newGiphy.Data.Images.Original.Url,
-                    Tags = new List<string> { tag }
+                    Tags = tag != null
+                        ? new List<string> { tag }
+                        : new List<string>()
                 });
+                return new CreatedResult(nameof(GetSavedGiphy), id);
             }
+
+            return NoContent();
         }
     }
 }

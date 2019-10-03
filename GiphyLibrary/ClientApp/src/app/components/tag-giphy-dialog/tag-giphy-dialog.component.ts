@@ -16,5 +16,4 @@ export class TagGiphyDialogComponent {
   onBackClick(): void {
     this.dialogRef.close();
   }
-
 }

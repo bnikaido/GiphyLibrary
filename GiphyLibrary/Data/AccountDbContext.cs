@@ -1,12 +1,11 @@
 ﻿using GiphyLibrary.Models;
-using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 
 namespace GiphyLibrary.Data
 {
     public class AccountDbContext : DbContext
     {
-        public AccountDbContext(DbContextOptions options) : base(options)
+        public AccountDbContext(DbContextOptions<AccountDbContext> options) : base(options)
         {
         }
 
