@@ -30,7 +30,6 @@ namespace GiphyLibrary.Controllers
             return results.Data.Select(data => new Giphy { 
                 Id = data.Id, 
                 Caption = data.Caption,
-                DownsizedUrl = data.Images.Downsized.Url, 
                 OriginalUrl = data.Images.Original.Url
             });
         }

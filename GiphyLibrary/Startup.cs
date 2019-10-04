@@ -1,19 +1,19 @@
+using GiphyLibrary.Controllers;
+using GiphyLibrary.Data;
+using GiphyLibrary.Domain;
+using GiphyLibrary.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
+using Microsoft.Azure.Storage;
+using Microsoft.Azure.Storage.Blob;
 using Microsoft.EntityFrameworkCore;
-using GiphyLibrary.Data;
-using GiphyLibrary.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using GiphyLibrary.Domain;
 using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Configuration;
 
 namespace GiphyLibrary
 {
@@ -42,9 +42,18 @@ namespace GiphyLibrary
             services.AddDefaultIdentity<ApplicationUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.AddDbContext<AccountDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("AccountConnection")));
+            services
+                .AddSingleton<CloudBlobClient>(_ =>
+                {
+                    var connectionString = Configuration.GetConnectionString("AzureStorageAccountConnection");
+                    if (!CloudStorageAccount.TryParse(connectionString, out var storageAccount))
+                    {
+                        throw new ConfigurationErrorsException("Unable to parse Azure storage connection string");
+                    }
+                    
+                    return storageAccount.CreateCloudBlobClient();
+                })
+                .AddSingleton<IBlobStorageQuery, BlobStorageQuery>();
 
             // Setup authentication
             services
@@ -91,6 +100,7 @@ namespace GiphyLibrary
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapControllers();
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");

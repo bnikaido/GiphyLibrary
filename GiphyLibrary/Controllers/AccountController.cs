@@ -4,6 +4,7 @@ using GiphyLibrary.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,22 +19,20 @@ namespace GiphyLibrary.Controllers
     {
         private readonly ILogger<AccountController> logger;
         private readonly IGiphyClient client;
-        private readonly AccountDbContext context;
+        private readonly IBlobStorageQuery query;
 
-        public AccountController(ILogger<AccountController> logger, IGiphyClient client, AccountDbContext context)
+        public AccountController(ILogger<AccountController> logger, IGiphyClient client, IBlobStorageQuery query)
         {
-            this.logger = logger ?? throw new System.ArgumentNullException(nameof(logger));
-            this.client = client ?? throw new System.ArgumentNullException(nameof(client));
-            this.context = context ?? throw new System.ArgumentNullException(nameof(context));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            this.client = client ?? throw new ArgumentNullException(nameof(client));
+            this.query = query ?? throw new ArgumentNullException(nameof(query));
         }
 
         [HttpGet("SavedGiphies/{id}")]
-        public ActionResult<Giphy> GetSavedGiphy(string id)
+        public async Task<ActionResult<Giphy>> GetSavedGiphy(string id)
         {
-            var result = context.Giphies
-                .Where(g => g.User == HttpContext.User.Identity.Name && g.GiphyId == id)
-                .FirstOrDefault();
-
+            var result = await query.GetBlob<Giphy>(HttpContext.User.Identity.Name, id).ConfigureAwait(false);
+         
             if (result == null)
             {
                 return NotFound();
@@ -42,65 +41,60 @@ namespace GiphyLibrary.Controllers
             return new ObjectResult(new Giphy
             {
                 Id = result.Id,
-                Caption = result.Tags.FirstOrDefault(),
+                Caption = result.Caption,
                 OriginalUrl = result.OriginalUrl,
-                DownsizedUrl = result.DownsizedUrl,
-                Tags = result.Tags.ToArray()
+                Tags = result.Tags
             });
         }
 
         [HttpGet("SavedGiphies")]
-        public ActionResult<IEnumerable<Giphy>> GetSavedGiphies(IEnumerable<string> tags = null)
+        public async Task<ActionResult<IEnumerable<Giphy>>> GetSavedGiphies(IEnumerable<string> tags = null)
         {
+            // TODO: make compatible with pagination
             tags = tags ?? Enumerable.Empty<string>();
 
-            var result = context.Giphies
-                .Where(g => g.User == HttpContext.User.Identity.Name && g.Tags.Exists(t => tags.Contains(t)))
-                .Select(g => new Giphy
-                {
-                    Id = g.Id,
-                    Caption = g.Tags.FirstOrDefault(),
-                    OriginalUrl = g.OriginalUrl,
-                    DownsizedUrl = g.DownsizedUrl,
-                    Tags = g.Tags.ToArray()
-                }).ToList();
+            var result = await query.GetBlobsInContainer<Giphy>(User.Identity.Name).ConfigureAwait(false);
 
             if(result == null)
             {
                 return NotFound();
             }
 
-            return new ObjectResult(result);
+            return new ObjectResult(result.Data);
         }
 
         [HttpPost("SavedGiphies/{id}")]
         public async Task<IActionResult> PostGiphy(string id, string tag = null)
         {
             var username = HttpContext.User.Identity.Name;
-            var giphy = context.Giphies
-                .Where(g => g.User == username && g.GiphyId == id)
-                .FirstOrDefault();
-            
-            if(giphy != null && tag != null)
+            var giphy = await query.GetBlob<Giphy>(username, id);
+            if (giphy == null)
+            {
+                var giphyResult = await client.GetGiphy(id);
+                if (giphyResult != null)
+                {
+                    await query.UploadBlob(new Giphy
+                    {
+                        Id = id,
+                        Caption = giphyResult.Data.Caption,
+                        OriginalUrl = giphyResult.Data.Images.Original.Url,
+                        Tags = tag != null
+                            ? new List<string> { tag }
+                            : new List<string>()
+                    },
+                    username, id);
+
+                    return new CreatedResult(nameof(GetSavedGiphy), id);
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+            else if (tag != null)
             {
                 giphy.Tags.Append(tag);
-                context.Giphies.Update(giphy);
-                return NoContent();
-            }
-            else if (giphy == null)
-            {
-                var newGiphy = await client.GetGiphy(id);
-                await context.Giphies.AddAsync(new StoredGiphy
-                {
-                    GiphyId = id,
-                    User = username,
-                    OriginalUrl = newGiphy.Data.Images.Original.Url,
-                    DownsizedUrl = newGiphy.Data.Images.Original.Url,
-                    Tags = tag != null
-                        ? new List<string> { tag }
-                        : new List<string>()
-                });
-                return new CreatedResult(nameof(GetSavedGiphy), id);
+                await query.UploadBlob(giphy, username, id);
             }
 
             return NoContent();

@@ -49,6 +49,7 @@ export class GiphyTableComponent implements OnChanges {
         }))
       .subscribe((response) => {
         if (response instanceof HttpResponse) {
+          // TODO: Fix login redirect
           if (+response.status >= 200 && +response.status < 300) {
             // TODO: Indicate success in UI
           }

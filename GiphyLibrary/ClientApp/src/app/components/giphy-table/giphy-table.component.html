@@ -1,6 +1,6 @@
 <div class="giphy-table">
   <div class="giphy" *ngFor="let giphy of giphies" >
-    <img src="{{giphy.downsizedUrl}}" alt="{{giphy.caption}}">
+    <img src="{{giphy.originalUrl}}" alt="{{giphy.caption}}">
     <div class="giphy-overlay">
       <button (click)="saveGiphy(giphy.id)">Save</button>
       <button (click)="openTagGiphyDialog(giphy.id)">Tag</button>
