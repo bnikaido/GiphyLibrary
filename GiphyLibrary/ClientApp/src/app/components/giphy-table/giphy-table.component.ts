@@ -21,11 +21,6 @@ export class GiphyTableComponent implements OnChanges {
     http: HttpClient,
     @Inject('BASE_URL') baseUrl: string) {
     this.http = http;
-    this.http.options(baseUrl, {
-      observe: 'response',
-      headers: new HttpHeaders()
-        .set('Content-Type', 'application/json')
-    });
     this.baseUrl = baseUrl;
   }
 
@@ -69,7 +64,11 @@ export class GiphyTableComponent implements OnChanges {
 
   tagGiphy(id: string, tag: string) {
     console.log(`tag giphy with id ${id} with tag ${tag}`);
-    return this.http.post<string>(`${this.baseUrl}Account/TagGiphy/${id}`, JSON.stringify(tag));
+    return this.http.post<string>(`${this.baseUrl}Account/TagGiphy/${id}`, JSON.stringify(tag), {
+      observe: 'response',
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/json')
+    });
   }
 
   handleResponse(response: HttpResponse<any>) {

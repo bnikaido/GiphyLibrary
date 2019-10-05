@@ -21,11 +21,6 @@ export class SavedGiphyTableComponent implements OnChanges {
     http: HttpClient,
     @Inject('BASE_URL') baseUrl: string) {
     this.http = http;
-    this.http.options(baseUrl, {
-      observe: 'response',
-      headers: new HttpHeaders()
-        .set('Content-Type', 'application/json')
-    });
     this.baseUrl = baseUrl;
   }
 
@@ -33,12 +28,20 @@ export class SavedGiphyTableComponent implements OnChanges {
     console.log(this.giphies);
   }
 
-  deleteGiphy(id: string) {
+  removeGiphy(id: string) {
     console.log(`saved ${id}!`);
-    this.http.delete<string>(`${this.baseUrl}Account/SaveGiphy/${id}`, null).subscribe((response: any) => {
+    this.http.delete<string>(`${this.baseUrl}Account/SavedGiphies/${id}`, {
+      observe: 'response'
+    }).subscribe((response: any) => {
       if (response instanceof HttpResponse) {
         this.handleResponse(response);
-        console.log(`Save giphy response: ${response.status} ${response.statusText}`);
+        // Note: Finds the removed giphy and removes it from the displayed array (avoids htpp call)
+        for (var i = 0; i < this.giphies.length; i++) {
+          if (this.giphies[i].id === id) {
+            this.giphies.splice(i, 1);
+          }
+        }
+        console.log(`Remove giphy response: ${response.status} ${response.statusText}`);
       }
     });
   }
@@ -69,7 +72,11 @@ export class SavedGiphyTableComponent implements OnChanges {
 
   tagGiphy(id: string, tag: string) {
     console.log(`tag giphy with id ${id} with tag ${tag}`);
-    return this.http.post<string>(`${this.baseUrl}Account/TagGiphy/${id}`, JSON.stringify(tag));
+    return this.http.post<string>(`${this.baseUrl}Account/TagGiphy/${id}`, JSON.stringify(tag), {
+      observe: 'response',
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/json')
+    });
   }
 
   handleResponse(response: HttpResponse<any>) {
