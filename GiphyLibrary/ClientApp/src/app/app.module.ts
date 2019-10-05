@@ -13,8 +13,6 @@ import { AppComponent } from './app.component';
 import { GiphyTableComponent } from './components/giphy-table/giphy-table.component';
 import { NavMenuComponent } from './components/nav-menu/nav-menu.component';
 import { SearchBarComponent } from './components/search-bar/search-bar.component';
-import { CounterComponent } from './pages/counter/counter.component';
-import { FetchDataComponent } from './pages/fetch-data/fetch-data.component';
 import { HomeComponent } from './pages/home/home.component';
 import { TagGiphyDialogComponent } from './components/tag-giphy-dialog/tag-giphy-dialog.component';
 import { GiphySearchComponent } from './pages/giphy-search/giphy-search.component';
@@ -30,8 +28,6 @@ import { SavedGiphyTableComponent } from './components/saved-giphy-table/saved-g
     GiphyTableComponent,
     SearchBarComponent,
     HomeComponent,
-    CounterComponent,
-    FetchDataComponent,
     TagGiphyDialogComponent,
     GiphySearchComponent,
     GiphySavedComponent,
@@ -45,8 +41,6 @@ import { SavedGiphyTableComponent } from './components/saved-giphy-table/saved-g
     ApiAuthorizationModule,
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
-      { path: 'counter', component: CounterComponent },
-      { path: 'fetch-data', component: FetchDataComponent, canActivate: [AuthorizeGuard] },
       { path: 'giphy-search', component: GiphySearchComponent, canActivate: [AuthorizeGuard] },
       { path: 'giphy-saved', component: GiphySavedComponent, canActivate: [AuthorizeGuard] },
     ]),
