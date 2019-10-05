@@ -1,7 +1,7 @@
-import { HttpClient, HttpResponse, HttpHeaders } from '@angular/common/http';
-import { Component, Input, OnChanges, SimpleChanges, Inject } from '@angular/core';
+import { HttpClient, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
+import { Component, Inject, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { MatDialog } from '@angular/material';
-import { of, observable } from 'rxjs';
+import { of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { Giphy } from '../../models/giphy.model';
 import { TagGiphyDialogComponent } from '../tag-giphy-dialog/tag-giphy-dialog.component';
@@ -30,9 +30,19 @@ export class GiphyTableComponent implements OnChanges {
 
   saveGiphy(id: string) {
     console.log(`saved ${id}!`);
+    this.http.post<string>(`${this.baseUrl}Account/SaveGiphy/${id}`, null, {
+      observe: 'response',
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/json')
+    }).subscribe((response) => {
+      if (response instanceof HttpResponse) {
+        this.handleResponse(response);
+        console.log(`Save giphy response: ${response.status} ${response.statusText}`);
+      }
+    });
   }
 
-  openTagGiphyDialog(id: string): any {
+  openTagGiphyDialog(id: string) {
     console.log(`tagged ${id}`);
     const dialogRef = this.dialog.open(TagGiphyDialogComponent, {
       data: ["Cats", "Favorites", "Funny"]
@@ -49,23 +59,34 @@ export class GiphyTableComponent implements OnChanges {
         }))
       .subscribe((response) => {
         if (response instanceof HttpResponse) {
-          // TODO: Fix login redirect
-          if (+response.status >= 200 && +response.status < 300) {
-            // TODO: Indicate success in UI
+            this.handleResponse(response);
+            console.log(`Tag giphy response: ${response.status} ${response.statusText}`);
           }
-          console.log(`Tag giphy response: ${response.status} ${response.statusText}`);
-        }
       });
   }
 
-  tagGiphy(id: string, tag: string): any {
+  tagGiphy(id: string, tag: string) {
     console.log(`tag giphy with id ${id} with tag ${tag}`);
 
-    return this.http.post<string>(`${this.baseUrl}Account/SavedGiphies/${id}`, tag, {
+    return this.http.post<string>(`${this.baseUrl}Account/TagGiphy/${id}`, JSON.stringify(tag), {
       observe: 'response',
+      params: new HttpParams()
+        .set('responseType', 'text'),
       headers: new HttpHeaders()
-        .set('Content-Type', 'application/json')
-        .set('Accept', 'application/json')
+        .set('Content-Type', 'application/json'),
+      
     });
+  }
+
+  handleResponse(response: HttpResponse<any>) {
+      if (response.ok) {
+        // TODO: Indicate success in UI
+      }
+      else if (response.status >= 300 && response.status < 400) {
+        // TODO: Handle redirect
+      }
+      else {
+        // TODO: Indicate failure
+      }
   }
 }

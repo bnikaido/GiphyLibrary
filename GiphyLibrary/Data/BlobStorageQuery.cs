@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace GiphyLibrary.Data
@@ -17,7 +18,7 @@ namespace GiphyLibrary.Data
     {
         Task<T> GetBlob<T>(string containerName, string fileName);
         Task<BlobDataSegment<T>> GetBlobsInContainer<T>(string containerName, BlobContinuationToken currentToken = null);
-        Task<Uri> UploadBlob<T>(T blob, string containerName, string fileName, string contentType = null);
+        Task<Uri> UploadBlob<T>(T blob, string containerName, string fileName, string contentType = "application/json");
     }
 
     public class BlobStorageQuery : IBlobStorageQuery
@@ -31,6 +32,9 @@ namespace GiphyLibrary.Data
 
         private const string JsonContent = "application/json";
         private const int StringBuffer = 256;
+        private const int MaxAzureBlobStorageNameLength = 62;
+
+        private static Regex AzureBlobStorageNameRestrictions = new Regex(@"[^A-Za-z0-9]");
 
         public BlobStorageQuery(ILogger<BlobStorageQuery> logger, CloudBlobClient client)
         {
@@ -40,6 +44,9 @@ namespace GiphyLibrary.Data
 
         public async Task<T> GetBlob<T>(string containerName, string fileName)
         {
+            containerName = EncodeAzureBlobStorageName(containerName);
+            fileName = EncodeAzureBlobStorageName(fileName);
+
             var blobUri = new Uri(client.BaseUri, $"{containerName}/{fileName}");
             return await GetBlob<T>(blobUri).ConfigureAwait(false);
         }
@@ -77,6 +84,8 @@ namespace GiphyLibrary.Data
             {
                 using (var stream = new MemoryStream())
                 {
+                    containerName = EncodeAzureBlobStorageName(containerName);
+
                     var response = await client.ListBlobsSegmentedAsync(containerName, currentToken).ConfigureAwait(false);
                     var dataSegment = new BlobDataSegment<T>
                     {
@@ -98,27 +107,48 @@ namespace GiphyLibrary.Data
                 {
                     logger.LogWarning(exception, "Failed to get resource");
                 }
-                return default;
+                return null;
             }
         }
 
         public async Task<Uri> UploadBlob<T>(T blob, string containerName, string fileName, string contentType = JsonContent)
         {
-            var container = client.GetContainerReference(containerName);
-            await container.CreateIfNotExistsAsync();
-
-            var blockBlob = container.GetBlockBlobReference(fileName);
-            blockBlob.Properties.ContentType = contentType;
-
-            if (contentType == JsonContent)
+            try
             {
-                await blockBlob.UploadTextAsync(SerializeAsJson(blob));
+                containerName = EncodeAzureBlobStorageName(containerName);
+                fileName = EncodeAzureBlobStorageName(fileName);
+
+                var container = client.GetContainerReference(containerName);
+                await container.CreateIfNotExistsAsync();
+
+                var blockBlob = container.GetBlockBlobReference(fileName);
+                blockBlob.Properties.ContentType = contentType;
+
+                if (contentType.Equals(JsonContent))
+                {
+                    await blockBlob.UploadTextAsync(SerializeAsJson(blob));
+                }
+                else
+                {
+                    await blockBlob.UploadFromStreamAsync(blob as Stream);
+                }
+                return blockBlob.Uri;
             }
-            else
+            catch (StorageException exception)
             {
-                await blockBlob.UploadFromStreamAsync(blob as Stream);
+                logger.LogWarning(exception, "Failed to upload resource");
+                return null;
             }
-            return blockBlob.Uri;
+        }
+
+        private string EncodeAzureBlobStorageName(string name)
+        {
+            var validName = $"gif{AzureBlobStorageNameRestrictions.Replace(name, "")}";
+            if (validName.Length > MaxAzureBlobStorageNameLength)
+            {
+                return validName.Substring(0, MaxAzureBlobStorageNameLength);
+            }
+            return validName;
         }
 
         private string SerializeAsJson<T>(T message)

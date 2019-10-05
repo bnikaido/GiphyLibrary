@@ -63,8 +63,14 @@ namespace GiphyLibrary.Controllers
             return new ObjectResult(result.Data);
         }
 
-        [HttpPost("SavedGiphies/{id}")]
-        public async Task<IActionResult> PostGiphy(string id, string tag = null)
+        [HttpPost("SaveGiphy/{id}")]
+        public async Task<IActionResult> PostGiphy(string id)
+        {
+            return await PostGiphy(id, null);
+        }
+
+        [HttpPost("TagGiphy/{id}")]
+        public async Task<IActionResult> PostGiphy(string id, [FromBody] string tag = null)
         {
             var username = HttpContext.User.Identity.Name;
             var giphy = await query.GetBlob<Giphy>(username, id);
@@ -91,9 +97,9 @@ namespace GiphyLibrary.Controllers
                     return NotFound();
                 }
             }
-            else if (tag != null)
+            else if (tag != null && !giphy.Tags.Exists(t => t.Equals(tag)))
             {
-                giphy.Tags.Append(tag);
+                giphy.Tags.Add(tag);
                 await query.UploadBlob(giphy, username, id);
             }
 
