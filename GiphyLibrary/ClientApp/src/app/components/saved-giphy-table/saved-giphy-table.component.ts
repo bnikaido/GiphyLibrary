@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Component, Inject, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { of } from 'rxjs';
@@ -7,11 +7,11 @@ import { Giphy } from '../../models/giphy.model';
 import { TagGiphyDialogComponent } from '../tag-giphy-dialog/tag-giphy-dialog.component';
 
 @Component({
-  selector: 'app-giphy-table',
-  templateUrl: './giphy-table.component.html',
-  styleUrls: ['./giphy-table.component.css']
+  selector: 'app-saved-giphy-table',
+  templateUrl: './saved-giphy-table.component.html',
+  styleUrls: ['./saved-giphy-table.component.css']
 })
-export class GiphyTableComponent implements OnChanges {
+export class SavedGiphyTableComponent implements OnChanges {
   @Input() giphies: Giphy[];
   http: HttpClient;
   baseUrl: string;
@@ -33,9 +33,9 @@ export class GiphyTableComponent implements OnChanges {
     console.log(this.giphies);
   }
 
-  saveGiphy(id: string) {
+  deleteGiphy(id: string) {
     console.log(`saved ${id}!`);
-    this.http.post<string>(`${this.baseUrl}Account/SaveGiphy/${id}`, null).subscribe((response: any) => {
+    this.http.delete<string>(`${this.baseUrl}Account/SaveGiphy/${id}`, null).subscribe((response: any) => {
       if (response instanceof HttpResponse) {
         this.handleResponse(response);
         console.log(`Save giphy response: ${response.status} ${response.statusText}`);
@@ -61,9 +61,9 @@ export class GiphyTableComponent implements OnChanges {
         }))
       .subscribe((response) => {
         if (response instanceof HttpResponse) {
-            this.handleResponse(response);
-            console.log(`Tag giphy response: ${response.status} ${response.statusText}`);
-          }
+          this.handleResponse(response);
+          console.log(`Tag giphy response: ${response.status} ${response.statusText}`);
+        }
       });
   }
 
@@ -73,14 +73,14 @@ export class GiphyTableComponent implements OnChanges {
   }
 
   handleResponse(response: HttpResponse<any>) {
-      if (response.ok) {
-        // TODO: Indicate success in UI
-      }
-      else if (response.status >= 300 && response.status < 400) {
-        // TODO: Handle redirect
-      }
-      else {
-        // TODO: Indicate failure
-      }
+    if (response.ok) {
+      // TODO: Indicate success in UI
+    }
+    else if (response.status >= 300 && response.status < 400) {
+      // TODO: Handle redirect
+    }
+    else {
+      // TODO: Indicate failure
+    }
   }
 }

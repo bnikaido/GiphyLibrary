@@ -48,11 +48,9 @@ namespace GiphyLibrary.Controllers
         }
 
         [HttpGet("SavedGiphies")]
-        public async Task<ActionResult<IEnumerable<Giphy>>> GetSavedGiphies(IEnumerable<string> tags = null)
+        public async Task<ActionResult<IEnumerable<Giphy>>> GetSavedGiphies()
         {
             // TODO: make compatible with pagination
-            tags = tags ?? Enumerable.Empty<string>();
-
             var result = await query.GetBlobsInContainer<Giphy>(User.Identity.Name).ConfigureAwait(false);
 
             if(result == null)
@@ -104,6 +102,18 @@ namespace GiphyLibrary.Controllers
             }
 
             return NoContent();
+        }
+
+        [HttpDelete("SavedGiphies/{id}")]
+        public async Task<IActionResult> DeleteGiphy(string id)
+        {
+            var result = await query.DeleteBlob(HttpContext.User.Identity.Name, id).ConfigureAwait(false);
+            if (result)
+            {
+                return NoContent();
+            }
+
+            return NotFound();
         }
     }
 }

@@ -19,6 +19,8 @@ import { HomeComponent } from './pages/home/home.component';
 import { TagGiphyDialogComponent } from './components/tag-giphy-dialog/tag-giphy-dialog.component';
 import { GiphySearchComponent } from './pages/giphy-search/giphy-search.component';
 import { GiphySavedComponent } from './pages/giphy-saved/giphy-saved.component';
+import { FilterBarComponent } from './components/filter-bar/filter-bar.component';
+import { SavedGiphyTableComponent } from './components/saved-giphy-table/saved-giphy-table.component';
 
 
 @NgModule({
@@ -32,7 +34,9 @@ import { GiphySavedComponent } from './pages/giphy-saved/giphy-saved.component';
     FetchDataComponent,
     TagGiphyDialogComponent,
     GiphySearchComponent,
-    GiphySavedComponent
+    GiphySavedComponent,
+    FilterBarComponent,
+    SavedGiphyTableComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -44,6 +48,7 @@ import { GiphySavedComponent } from './pages/giphy-saved/giphy-saved.component';
       { path: 'counter', component: CounterComponent },
       { path: 'fetch-data', component: FetchDataComponent, canActivate: [AuthorizeGuard] },
       { path: 'giphy-search', component: GiphySearchComponent, canActivate: [AuthorizeGuard] },
+      { path: 'giphy-saved', component: GiphySavedComponent, canActivate: [AuthorizeGuard] },
     ]),
     BrowserAnimationsModule,
     MatPaginatorModule,

@@ -1,4 +1,3 @@
-using GiphyLibrary.Controllers;
 using GiphyLibrary.Data;
 using GiphyLibrary.Domain;
 using GiphyLibrary.Models;

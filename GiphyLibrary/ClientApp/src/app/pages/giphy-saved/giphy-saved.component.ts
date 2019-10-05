@@ -1,15 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { Giphy } from '../../models/giphy.model';
 
 @Component({
   selector: 'app-giphy-saved',
   templateUrl: './giphy-saved.component.html',
   styleUrls: ['./giphy-saved.component.css']
 })
-export class GiphySavedComponent implements OnInit {
+export class GiphySavedComponent {
+  giphies: Giphy[];
 
-  constructor() { }
-
-  ngOnInit() {
+  updateGiphies(giphies: Giphy[]) {
+    this.giphies = giphies;
   }
-
 }

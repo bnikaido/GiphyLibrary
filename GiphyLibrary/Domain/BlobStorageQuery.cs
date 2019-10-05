@@ -12,13 +12,14 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace GiphyLibrary.Data
+namespace GiphyLibrary.Domain
 {
     public interface IBlobStorageQuery
     {
         Task<T> GetBlob<T>(string containerName, string fileName);
         Task<BlobDataSegment<T>> GetBlobsInContainer<T>(string containerName, BlobContinuationToken currentToken = null);
         Task<Uri> UploadBlob<T>(T blob, string containerName, string fileName, string contentType = "application/json");
+        Task<bool> DeleteBlob(string containerName, string fileName);
     }
 
     public class BlobStorageQuery : IBlobStorageQuery
@@ -86,7 +87,7 @@ namespace GiphyLibrary.Data
                 {
                     containerName = EncodeAzureBlobStorageName(containerName);
 
-                    var response = await client.ListBlobsSegmentedAsync(containerName, currentToken).ConfigureAwait(false);
+                    var response = await client.ListBlobsSegmentedAsync($"{containerName}/", currentToken).ConfigureAwait(false);
                     var dataSegment = new BlobDataSegment<T>
                     {
                         Data = new List<T>(),
@@ -138,6 +139,24 @@ namespace GiphyLibrary.Data
             {
                 logger.LogWarning(exception, "Failed to upload resource");
                 return null;
+            }
+        }
+
+        public async Task<bool> DeleteBlob(string containerName, string fileName)
+        {
+            try
+            {
+                containerName = EncodeAzureBlobStorageName(containerName);
+                fileName = EncodeAzureBlobStorageName(fileName);
+
+                var blobUri = new Uri(client.BaseUri, $"{containerName}/{fileName}");
+                var blob = await client.GetBlobReferenceFromServerAsync(blobUri);
+                return await blob.DeleteIfExistsAsync();
+            }
+            catch (StorageException exception)
+            {
+                logger.LogWarning(exception, "Failed to delete resource");
+                return false;
             }
         }
 

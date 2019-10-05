@@ -20,6 +20,7 @@ export class SearchBarComponent implements OnInit {
   }
 
   ngOnInit() {
+    // TODO: Use "trending" url instead
     this.http.get<Giphy[]>(`${this.baseUrl}Giphy/Search/cats`).subscribe((result: Giphy[]) => {
       console.log(result);
       this.updateGiphies(result);
