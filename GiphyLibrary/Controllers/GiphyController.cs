@@ -1,5 +1,6 @@
 ﻿using GiphyLibrary.Domain;
 using GiphyLibrary.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace GiphyLibrary.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class GiphyController : ControllerBase
