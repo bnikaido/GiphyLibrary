@@ -1,0 +1,18 @@
+<div class="dialog-wrapper">
+  <h1 mat-dialog-title>Tag Giphy</h1>
+  <div mat-dialog-content class="tag-dialog-form">
+      <mat-form-field class="tag-dialog-field">
+        <mat-select *ngIf="tags.length != 0" placeholder="Please select a tag" [(ngModel)]="selectedTag" name="selectedTag">
+          <mat-option *ngFor="let tag of tags" [value]="tag">{{tag}}</mat-option>
+          <mat-option [value]="'other'">Other</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field class="tag-dialog-field" *ngIf="tags.length === 0 || selectedTag === 'other'">
+        <input matInput placeholder="Enter tag" [(ngModel)]="inputTag" name="inputTag" />
+      </mat-form-field>
+  </div>
+  <mat-dialog-actions class="tag-button-wrapper">
+    <button mat-button [mat-dialog-close]>Back</button>
+    <button mat-button (click)="onOkClick()">Ok</button>
+  </mat-dialog-actions>
+</div>

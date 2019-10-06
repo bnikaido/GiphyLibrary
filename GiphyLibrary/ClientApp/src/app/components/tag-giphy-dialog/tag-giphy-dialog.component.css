@@ -1,0 +1,8 @@
+.tag-dialog-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.tag-dialog-form > * {
+  width: 100%
+}

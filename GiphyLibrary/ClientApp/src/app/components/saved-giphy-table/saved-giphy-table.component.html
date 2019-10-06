@@ -1,0 +1,10 @@
+<div class="giphy-table">
+  <div class="giphy" *ngFor="let giphy of giphies">
+    <img src="{{giphy.originalUrl}}" alt="{{giphy.caption}}">
+    <div class="giphy-overlay">
+      <button (click)="openTagGiphyDialog(giphy.id)">Tag</button>
+      <button (click)="removeGiphy(giphy.id)">Remove</button>
+    </div>
+  </div>
+</div>
+
