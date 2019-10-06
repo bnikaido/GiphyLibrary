@@ -4,7 +4,6 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 @Component({
   selector: 'app-tag-giphy-dialog',
   templateUrl: './tag-giphy-dialog.component.html',
-  styleUrls: ['./tag-giphy-dialog.component.css']
 })
 export class TagGiphyDialogComponent {
   selectedTag: string;

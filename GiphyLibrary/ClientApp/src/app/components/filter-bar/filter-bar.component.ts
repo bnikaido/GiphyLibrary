@@ -6,7 +6,7 @@ import { Giphy } from '../../models/giphy.model';
 @Component({
   selector: 'app-filter-bar',
   templateUrl: './filter-bar.component.html',
-  styleUrls: ['./filter-bar.component.css']
+  styleUrls: ['../search-bar.css']
 })
 export class FilterBarComponent implements OnInit {
   inputText: string;

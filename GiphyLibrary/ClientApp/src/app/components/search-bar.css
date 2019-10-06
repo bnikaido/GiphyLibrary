@@ -2,7 +2,6 @@
   width: 100%;
   display: flex;
   vertical-align: middle;
-  border-radius: 2px;
   overflow: hidden;
   position: relative;
   height: 40px;
@@ -19,7 +18,7 @@
 
 .input-bar {
   background-color: #e7e7e7;
-  border-radius: 25px;
+  border-radius: 10px;
   border: 2px solid #008CBA;
   font-size: 16px;
   width: 100%;
@@ -27,13 +26,13 @@
   padding: 8px;
 }
 
-.input-bar:focus {
-  background-color: white;
-}
+  .input-bar:focus {
+    background-color: white;
+  }
 
 .search-button {
   margin-left: 2px;
-  border-radius: 25px;
+  border-radius: 10px;
   border: 2px solid #008CBA;
   background: #008CBA;
   font-size: 16px;
@@ -44,7 +43,7 @@
   transition: background .1s ease;
 }
 
-.search-button:hover {
-  background-color: white;
-  color: black;
-}
+  .search-button:hover {
+    background-color: white;
+    color: black;
+  }

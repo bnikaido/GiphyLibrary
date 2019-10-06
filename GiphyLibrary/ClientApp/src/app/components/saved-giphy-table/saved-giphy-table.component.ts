@@ -9,7 +9,7 @@ import { TagGiphyDialogComponent } from '../tag-giphy-dialog/tag-giphy-dialog.co
 @Component({
   selector: 'app-saved-giphy-table',
   templateUrl: './saved-giphy-table.component.html',
-  styleUrls: ['./saved-giphy-table.component.css']
+  styleUrls: ['../giphy-table.css','./saved-giphy-table.component.css']
 })
 export class SavedGiphyTableComponent implements OnChanges {
   @Input() giphies: Giphy[];
