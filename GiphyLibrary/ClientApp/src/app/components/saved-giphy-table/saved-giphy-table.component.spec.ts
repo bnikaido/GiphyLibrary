@@ -22,4 +22,6 @@ describe('SavedGiphyTableComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  // TODO: Add tests ngOnChanges, removeGiphy, openTagGiphyDialog, tagGiphy
 });

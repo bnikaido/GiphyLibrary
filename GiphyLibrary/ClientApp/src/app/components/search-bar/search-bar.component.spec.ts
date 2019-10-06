@@ -22,4 +22,6 @@ describe('SearchBarComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  // TODO: Add tests ngOnInit, onSubmit, updateGiphies
 });
