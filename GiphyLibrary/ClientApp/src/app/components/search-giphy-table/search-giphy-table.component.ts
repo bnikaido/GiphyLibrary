@@ -7,11 +7,11 @@ import { Giphy } from '../../models/giphy.model';
 import { TagGiphyDialogComponent } from '../tag-giphy-dialog/tag-giphy-dialog.component';
 
 @Component({
-  selector: 'app-giphy-table',
-  templateUrl: './giphy-table.component.html',
-  styleUrls: ['./giphy-table.component.css']
+  selector: 'app-search-giphy-table',
+  templateUrl: './search-giphy-table.component.html',
+  styleUrls: ['./search-giphy-table.component.css']
 })
-export class GiphyTableComponent implements OnChanges {
+export class SearchGiphyTableComponent implements OnChanges {
   @Input() giphies: Giphy[];
   http: HttpClient;
   baseUrl: string;

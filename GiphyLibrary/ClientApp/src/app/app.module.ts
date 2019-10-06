@@ -10,7 +10,7 @@ import { AuthorizeGuard } from 'src/api-authorization/authorize.guard';
 import { AuthorizeInterceptor } from 'src/api-authorization/authorize.interceptor';
 
 import { AppComponent } from './app.component';
-import { GiphyTableComponent } from './components/giphy-table/giphy-table.component';
+import { SearchGiphyTableComponent } from './components/search-giphy-table/search-giphy-table.component';
 import { NavMenuComponent } from './components/nav-menu/nav-menu.component';
 import { SearchBarComponent } from './components/search-bar/search-bar.component';
 import { HomeComponent } from './pages/home/home.component';
@@ -25,7 +25,7 @@ import { SavedGiphyTableComponent } from './components/saved-giphy-table/saved-g
   declarations: [
     AppComponent,
     NavMenuComponent,
-    GiphyTableComponent,
+    SearchGiphyTableComponent,
     SearchBarComponent,
     HomeComponent,
     TagGiphyDialogComponent,

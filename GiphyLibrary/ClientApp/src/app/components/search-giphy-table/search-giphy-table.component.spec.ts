@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GiphyTableComponent } from './giphy-table.component';
+import { SearchGiphyTableComponent } from './search-giphy-table.component';
 
 describe('GiphyTableComponent', () => {
-  let component: GiphyTableComponent;
-  let fixture: ComponentFixture<GiphyTableComponent>;
+  let component: SearchGiphyTableComponent;
+  let fixture: ComponentFixture<SearchGiphyTableComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ GiphyTableComponent ]
+      declarations: [ SearchGiphyTableComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(GiphyTableComponent);
+    fixture = TestBed.createComponent(SearchGiphyTableComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
